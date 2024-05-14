@@ -24,5 +24,12 @@ for ($i = 0; $i -lt $maxRetries; $i++) {
     }
 }
 
+# Create a scheduled task to run the script every day at user log on
+# Exemple: New-ScheduledTask -Action $action -Trigger $trigger -Settings $settings -Principal $principal
 
+# $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File ""D:\Library\Code\Useful scripts\bnf_captive_portal.ps1"""
+# $trigger = New-ScheduledTaskTrigger -AtLogOn
+# $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries
+# $principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount
 
+# Register-ScheduledTask -TaskName "BNF Captive Portal" -Action $action -Trigger $trigger -Settings $settings -Principal $principal
