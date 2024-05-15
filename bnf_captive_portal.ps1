@@ -3,7 +3,7 @@
 # <input class="button" type="submit" id="boutonAction" name="action" value="Accepter" onclick="document.getElementById('attente').style.display='block';">
 
 # Check if network is on and retry every 5 seconds
-$maxRetries = 60 # 5 minutes (5 min = 300 s ; 300/5 = 60 retries)
+$maxRetries = 120 # 10 minutes (10 min = 600 s ; 600/5 = 120 retries)
 $retryDelay = 5 # 5 seconds
 for ($i = 0; $i -lt $maxRetries; $i++) {
     $connectionProfile = Get-NetConnectionProfile
@@ -21,6 +21,10 @@ for ($i = 0; $i -lt $maxRetries; $i++) {
         # Internet connection is not valid, wait and try again
         Write-Host "No internet connection detected. Waiting $retryDelay seconds before trying again."
         Start-Sleep -Seconds $retryDelay
+    }
+    if ($i -eq $maxRetries) {
+        # Exceeded the maximum number of retries, exit the script or take other action
+        Write-Host "Unable to establish a valid internet connection. Can't access internet through BNF Captive Portal."
     }
 }
 
