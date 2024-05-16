@@ -13,15 +13,21 @@ for ($i = 0; $i -lt $maxRetries; $i++) {
 
         Invoke-WebRequest -Uri $url -Method Post -Body $body
         Write-Host "Successful connection to BNF portal."
-        # Wait for 2 seconds before closing
-        Start-Sleep -Seconds 2
-        break
+        # Check if the internet connection is successful
+        $webRequest = Invoke-WebRequest -Uri "http://www.google.com" -Method Head -ErrorAction SilentlyContinue
+        
+        if ($webRequest.StatusCode -eq 200) {
+            Write-Host "Internet connection is successful."
+            Start-Sleep -Seconds $retryDelay
+            break
+        }
+    
+        else {
+            Write-Host "No internet connection detected. Waiting $retryDelay seconds before trying again."
+            Start-Sleep -Seconds $retryDelay
+        }
     }
-    else {
-        # Internet connection is not valid, wait and try again
-        Write-Host "No internet connection detected. Waiting $retryDelay seconds before trying again."
-        Start-Sleep -Seconds $retryDelay
-    }
+    
     if ($i -eq $maxRetries) {
         # Exceeded the maximum number of retries, exit the script or take other action
         Write-Host "Unable to establish a valid internet connection. Can't access internet through BNF Captive Portal."
