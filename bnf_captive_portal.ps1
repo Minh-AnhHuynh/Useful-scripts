@@ -1,37 +1,57 @@
-
-# HTML:
-# <input class="button" type="submit" id="boutonAction" name="action" value="Accepter" onclick="document.getElementById('attente').style.display='block';">
-
 # Check if network is on and retry every 5 seconds
-$maxRetries = 120 # 10 minutes (10 min = 600 s ; 600/5 = 120 retries)
+$minutes = 5
 $retryDelay = 5 # 5 seconds
+$maxRetries = $minutes * 60 / $retryDelay # 5 minutes (5 min = 5*60s ; 300/5 = 60 retries)
+$maxDuration = 300 # Define maxDuration to avoid undefined variable error
 for ($i = 0; $i -lt $maxRetries; $i++) {
-    $connectionProfile = Get-NetConnectionProfile
-    if ($connectionProfile.Name -eq "BNF") {
+    try {
+        # Attempt to connect to the portal
+        $connectionProfile = Get-NetConnectionProfile
+        if ($connectionProfile.Name -ne "BNF") {
+            Write-Host "The network is not BNF. Waiting $retryDelay seconds before trying again."
+            Start-Sleep -Seconds $retryDelay
+            continue
+        }
+
         $url = "http://detectportal.firefox.com/canonical.html"
         $body = @{action = "Accepter" }
+        $maxDuration = 60 # Maximum duration in seconds (1 minute)
+        $startTime = Get-Date
 
-        Invoke-WebRequest -Uri $url -Method Post -Body $body
-        Write-Host "Successful connection to BNF portal."
-        # Check if the internet connection is successful
-        $webRequest = Invoke-WebRequest -Uri "http://www.google.com" -Method Head -ErrorAction SilentlyContinue
+        while ((Get-Date).AddSeconds(-$maxDuration) -lt $startTime) {
+            try {
+                Invoke-WebRequest -Uri $url -Method Post -Body $body | Out-Null
+                Write-Host "Attempted connection to BNF portal."
         
-        if ($webRequest.StatusCode -eq 200) {
-            Write-Host "Internet connection is successful."
-            Start-Sleep -Seconds $retryDelay
-            break
-        }
-    
-        else {
-            Write-Host "No internet connection detected. Waiting $retryDelay seconds before trying again."
-            Start-Sleep -Seconds $retryDelay
+                # Check if the internet connection is successful
+                Write-Host "Waiting $($retryDelay * 2) seconds before checking"
+                Start-Sleep -Seconds ($retryDelay * 2)
+                Write-Host "Checking if connection to Google is possible."
+                $webRequest = Invoke-WebRequest -Uri "http://www.google.com" -Method Head
+                if ($webRequest.StatusCode -eq 200) {
+                    Write-Host "Internet connection is successful."
+                    break
+                }
+                else {
+                    Write-Output "Request failed. Retrying..."
+                    Start-Sleep -Seconds $retryDelay
+                }
+            } 
+            catch {
+                Write-Host "Attempt $i : No internet connection detected or portal connection failed. Waiting $retryDelay seconds before trying again."
+                Start-Sleep -Seconds $retryDelay
+            }
         }
     }
-    
-    if ($i -eq $maxRetries) {
-        # Exceeded the maximum number of retries, exit the script or take other action
-        Write-Host "Unable to establish a valid internet connection. Can't access internet through BNF Captive Portal."
+    catch {
+        Write-Host "Attempt $i : Error occurred. Waiting $retryDelay seconds before trying again."
+        Start-Sleep -Seconds $retryDelay
     }
+}
+
+if ($i -eq $maxRetries) {
+    # Exceeded the maximum number of retries, exit the script or take other action
+    Write-Host "Unable to establish a valid internet connection. Can't access internet through BNF Captive Portal."
 }
 
 # Create a scheduled task to run the script every day at user log on
@@ -43,3 +63,4 @@ for ($i = 0; $i -lt $maxRetries; $i++) {
 # $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries
 # $principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount
 # Register-ScheduledTask -TaskName "BNF Captive Portal" -Action $action -Trigger $trigger -Settings $settings -Principal $principal
+
