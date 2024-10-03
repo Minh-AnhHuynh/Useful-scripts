@@ -1,5 +1,10 @@
 $maxRetries = 10 # 10 minutes (30 * 10 seconds)
 $retryDelay = 30 # 30 seconds
+$initialDelay = 10 # 10 seconds
+
+Write-Host "Delaying the start of the script for $initialDelay seconds."
+Start-Sleep -Seconds $initialDelay
+Write-Host "Starting the script."
 
 for ($i = 0; $i -lt $maxRetries; $i++) {
     # Check if the internet connection is valid
@@ -8,7 +13,8 @@ for ($i = 0; $i -lt $maxRetries; $i++) {
         Write-Host "Internet connection successful."
         Start-Process "C:\Users\Minh-Anh\AppData\Local\MEGAsync\MEGAsync.exe"
         break
-    } else {
+    }
+    else {
         # Internet connection is not valid, wait and try again
         Write-Host "No internet connection detected. Waiting $retryDelay seconds before trying again."
         Start-Sleep -Seconds $retryDelay
@@ -18,4 +24,5 @@ for ($i = 0; $i -lt $maxRetries; $i++) {
 if ($i -eq $maxRetries) {
     # Exceeded the maximum number of retries, exit the script or take other action
     Write-Host "Unable to establish a valid internet connection. MegaSync will not be launched."
+    Start-Sleep -Seconds $retryDelay
 }
