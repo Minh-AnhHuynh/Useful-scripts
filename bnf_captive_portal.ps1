@@ -49,8 +49,6 @@ for ($i = 0; $i -lt $maxRetries; $i++) {
 
         $url = "http://detectportal.firefox.com/canonical.html"
         $body = @{action = "Accepter" }
-        $maxDuration = 60 # Maximum duration in seconds (1 minute)
-        $startTime = Get-Date
 
         Invoke-WebRequest -Uri $url -Method Post -Body $body | Out-Null
         Write-Host "Attempted connection to BNF portal."
