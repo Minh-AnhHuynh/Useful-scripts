@@ -21,8 +21,10 @@ for ($j = 0; $j -lt $maxWifiRetries; $j++) {
             break
         }
     }
+    else {
+        Write-Host "$wifiName network not available yet. Retrying in $wifiRetryDelay seconds..."
+    }
 
-    Write-Host "$wifiName network not available yet. Retrying in $wifiRetryDelay seconds..."
     Start-Sleep -Seconds $wifiRetryDelay
 }
 
@@ -31,6 +33,9 @@ if (-not $wifiConnected) {
     Write-Host "Unable to connect to $wifiName Wi-Fi after $maxWifiRetries retries. Exiting script."
     exit
 }
+
+$maxRetries = 12
+$retryDelay = 10
 
 for ($i = 0; $i -lt $maxRetries; $i++) {
     try {
@@ -44,15 +49,13 @@ for ($i = 0; $i -lt $maxRetries; $i++) {
 
         $url = "http://detectportal.firefox.com/canonical.html"
         $body = @{action = "Accepter" }
-        $maxDuration = 60 # Maximum duration in seconds (1 minute)
-        $startTime = Get-Date
 
         Invoke-WebRequest -Uri $url -Method Post -Body $body | Out-Null
         Write-Host "Attempted connection to BNF portal."
         
         # Step 3: Check if the internet connection is successful
-        Write-Host "Waiting $($retryDelay * 2) seconds before checking."
-        Start-Sleep -Seconds ($retryDelay * 2)
+        Write-Host "Waiting $retryDelay seconds before checking."
+        Start-Sleep -Seconds $retryDelay
                 
 
 
