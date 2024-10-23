@@ -84,7 +84,7 @@ def get_content_type(content):
 
 def find_doi_or_pmid_from_title(title):
 	query = title
-	for j in search(query, tld="com", num=10, stop=10, pause=2):
+	for j in search(query):
 		print(f"Checking URL: {j}")
 		if "pubmed" in j:
 			print("Found PubMed URL")
