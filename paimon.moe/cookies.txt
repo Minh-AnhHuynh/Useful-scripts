@@ -1,0 +1,7 @@
+# Netscape HTTP Cookie File
+# https://curl.haxx.se/rfc/cookie_spec.html
+# This is a generated file! Do not edit.
+
+.paimon.moe	TRUE	/	FALSE	253402257600	G_ENABLED_IDPS	google
+.paimon.moe	TRUE	/	TRUE	0	G_AUTHUSER_H	0
+.paimon.moe	TRUE	/wish	TRUE	0	G_AUTHUSER_H	0
