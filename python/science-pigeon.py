@@ -151,19 +151,17 @@ def subprocess_doi_pmid_from_title(title):
 
 def run_subprocess_title(command):
 	result = subprocess.run(command, capture_output=True, text=True)
+	info_messages = re.findall(r'\[.*\].*', result.stderr)
 	if result.stderr:
 		# Check for specific error patterns in stderr
 		if not "Successfully download" in result.stderr:
 			print("Scidownload did not find the paper from the title. Trying to find DOI or PMID...")
 			# Extract and print the last message
-			info_messages = re.findall(r'\[.*\].*', result.stderr)
 			if info_messages:
 				print("Last message:", info_messages[-1])
 			subprocess_doi_pmid_from_title(clipboard_content)
 		else:
-			print("Scidownload completed with warnings:")
-	else:
-		print("Scidownload completed successfully:")
+			print("Last message:", info_messages[-1])
 
 
 content_type = get_content_type(clipboard_content)
