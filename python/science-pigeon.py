@@ -101,8 +101,8 @@ def find_doi_or_pmid_from_title(title):
 			response = requests.get(pubmed_url)
 			soup = BeautifulSoup(response.content, "html.parser")
 			doi_link = soup.find("a",
-								 class_="id-link",
-								 href=re.compile(r'doi.org'))
+				class_="id-link",
+				href=re.compile(r'doi.org'))
 			if doi_link and "href" in doi_link.attrs:
 				doi = doi_link["href"]
 				print(f"Found DOI: {doi}")
@@ -121,8 +121,8 @@ def subprocess_doi_pmid_from_title(title):
 		return
 	subresult_doi = subprocess.run(
 		[
-			"scidownl", "download", "--doi", doi_pmid_found[0], "--out",
-			download_dir
+		"scidownl", "download", "--doi", doi_pmid_found[0], "--out",
+		download_dir
 		],
 		capture_output=True,
 		text=True,
@@ -136,12 +136,12 @@ def subprocess_doi_pmid_from_title(title):
 		print("Failed to download from DOI. Trying with PMID...")
 		subresult_pmid = subprocess.run(
 			[
-				"scidownl",
-				"download",
-				"--pmid",
-				doi_pmid_found[1],
-				"--out",
-				download_dir,
+			"scidownl",
+			"download",
+			"--pmid",
+			doi_pmid_found[1],
+			"--out",
+			download_dir,
 			],
 			capture_output=True,
 			text=True,
@@ -153,8 +153,7 @@ def subprocess_doi_pmid_from_title(title):
 	else:
 		# Extract the title from stderr
 		title_match = re.search(r"'title': '([^']+)'", subresult_doi.stderr)
-		title_extract = title_match.group(
-			1) if title_match else "Unknown Title"
+		title_extract = title_match.group(1) if title_match else "Unknown Title"
 		# print(
 		# 	f"Paper \033[1m{title_extract}\033[0m found and downloaded successfully to \033[1m{download_dir}\033[0m."
 		# )
@@ -181,7 +180,7 @@ content_type = get_content_type(clipboard_content)
 
 if content_type == "doi":
 	doi_match = re.search(r"10\.\d{4,9}/[-._;()/:A-Z0-9]+", clipboard_content,
-						  re.IGNORECASE)
+		re.IGNORECASE)
 	doi = doi_match.group(0) if doi_match else clipboard_content
 	subprocess.run(
 		["scidownl", "download", "--doi", doi, "--out", download_dir])
@@ -193,7 +192,7 @@ elif content_type == "pmid":
 elif content_type == "link":
 	# Handle link if necessary, assuming it's a DOI link
 	doi_match = re.search(r"10\.\d{4,9}/[-._;()/:A-Z0-9]+", clipboard_content,
-						  re.IGNORECASE)
+		re.IGNORECASE)
 	if doi_match:
 		doi = doi_match.group(0)
 		subprocess.run(
