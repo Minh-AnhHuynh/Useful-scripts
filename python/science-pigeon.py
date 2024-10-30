@@ -7,6 +7,10 @@ from googlesearch import search
 from bs4 import BeautifulSoup
 import time
 import json
+import sys
+
+# Attempt to display \u2193 in the print console
+sys.stdout.reconfigure(encoding='utf-8')
 
 # Define the path to the configuration file
 config_dir = "config"
@@ -170,7 +174,7 @@ def run_subprocess_title(command):
 			)
 			# Extract and print the last message
 			if info_messages:
-				print("Last message:", info_messages[-1])
+				print("Last message:\n", info_messages[-1])
 			subprocess_doi_pmid_from_title(clipboard_content)
 		else:
 			print("Last message:", info_messages[-1])
