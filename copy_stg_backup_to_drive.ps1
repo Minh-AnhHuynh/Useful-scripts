@@ -78,8 +78,5 @@ $folders | Where-Object { $_.FullName -ne $folder.FullName } | ForEach-Object {
     Write-Output "Removed folder: $($_.FullName)"
 }
 
-
-# Show a message box to the user
-Add-Type -AssemblyName System.Windows.Forms
-Add-Type -AssemblyName PresentationFramework
-[System.Windows.MessageBox]::Show("STG Backup completed successfully!", "Backup Status", [System.Windows.Forms.MessageBoxButtons]::OK)
+Write-Output "STG Backup completed successfully!"
+Start-Sleep -Seconds 5

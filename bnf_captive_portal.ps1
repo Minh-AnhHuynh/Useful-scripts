@@ -33,9 +33,10 @@ if (-not $wifiConnected) {
     Write-Host "Unable to connect to $wifiName Wi-Fi after $maxWifiRetries retries. Exiting script."
     exit
 }
-
-$maxRetries = 12
-$retryDelay = 10
+$minutes = 2
+$seconds = 60*$minutes
+$retryDelay = 5
+$maxRetries = $seconds/$retryDelay
 
 for ($i = 0; $i -lt $maxRetries; $i++) {
     try {
@@ -65,11 +66,11 @@ for ($i = 0; $i -lt $maxRetries; $i++) {
 
         if ($connectionProfile.IPv4Connectivity -eq "Internet") {
             Write-Host "Internet connection is successful. Exiting script."
+            Start-Sleep -Seconds 1
             exit  # Exit the script upon successful internet connection
         }
         else {
             Write-Output "Request failed. Retrying..."
-            Start-Sleep -Seconds $retryDelay
         } 
     }
     catch {
