@@ -12,8 +12,8 @@ if ($process) {
     Write-Output "Google Drive has started successfully."
 }
 
-
-$downloadsPath = "D:\Library\Downloads"
+# Get the user's Downloads folder
+$downloadsPath = (New-Object -ComObject Shell.Application).Namespace('shell:Downloads').Self.Path
 $folders = Get-ChildItem $downloadsPath | Where-Object { $_.Name -like "STG*" }
 
 if ($null -eq $folders) { 
