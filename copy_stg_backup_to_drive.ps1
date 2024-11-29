@@ -1,4 +1,4 @@
-﻿$process = Get-Process GoogleDriveFS -ErrorAction SilentlyContinue
+$process = Get-Process GoogleDriveFS -ErrorAction SilentlyContinue
 
 if ($process) {
     Write-Output "Google Drive is already running."
