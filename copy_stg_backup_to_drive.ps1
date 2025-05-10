@@ -25,7 +25,7 @@ if ($null -eq $folders) {
 
 # Get the last folder in the array
 $folder = $folders[-1]
-# Get the last file to backup
+# Get the files in the folder
 $files = Get-ChildItem -Path $folder.FullName
 
 
@@ -38,7 +38,9 @@ if ($null -eq $files) {
 $backup_files = $files | Sort-Object LastWriteTime -Descending | Select-Object -First 1
 
 # Get the computer name
-$computerName = $env:COMPUTERNAME
+# $computerName = $env:COMPUTERNAME
+# Limited to 15 characters, switching to hostname
+$computerName = $(hostname)
 # Convert the computer name to CamelCase
 
 $camelCaseComputerName = -join ($computerName -split '[_ ]' | ForEach-Object { 
@@ -62,15 +64,26 @@ if (-not (Test-Path -Path $uniqueFolderName)) {
 
 # Update the destination to include the unique folder
 $destination = $uniqueFolderName
+
+# Copy the file to the destination with error handling
 # Copy the file to the destination with error handling
 try {
     Copy-Item -Path $backup_files.FullName -Destination $destination -ErrorAction Stop
-    Write-Output "File backed up: $($backup_files.Name)"
+    Write-Output "File backed up: $($backup_files.Name) to $destination"
+    
+    # Verify if the file exists in the destination folder
+    $destinationFilePath = Join-Path -Path $destination -ChildPath $backup_files.Name
+    if (Test-Path -Path $destinationFilePath) {
+        Write-Output "File successfully verified in destination: $destinationFilePath"
+    } else {
+        Write-Output "File copy verification failed: $($backup_files.Name) not found in destination: $destination"
+    }
 } catch {
     Write-Output "Error copying file: $_"
 }
 
 # Do post backup cleanup of local files
+Write-Output "Starting post-backup cleanup of local files..."
 
 # Remove all folders except the most recent one
 $folders | Where-Object { $_.FullName -ne $folder.FullName } | ForEach-Object {
