@@ -4,7 +4,7 @@ if ($process) {
     Write-Output "Google Drive is already running."
 } else {
     Write-Output "Google Drive is not running. Starting it now."
-    Start-Process "C:\Program Files\Google\Drive File Stream\68.0.2.0\GoogleDriveFS.exe"
+    Start-Process "googledrive"
 
     while (!(Get-Process GoogleDriveFS -ErrorAction SilentlyContinue)) {
         Start-Sleep -Seconds 2
