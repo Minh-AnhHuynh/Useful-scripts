@@ -66,9 +66,16 @@ if (-not (Test-Path -Path $uniqueFolderName)) {
 $destination = $uniqueFolderName
 
 # Copy the file to the destination with error handling
-# Copy the file to the destination with error handling
 try {
-    Copy-Item -Path $backup_files.FullName -Destination $destination -ErrorAction Stop
+    $sourceDirectory = Split-Path -Path $backup_files.FullName -Parent
+    $sourceFile = Split-Path -Path $backup_files.FullName -Leaf
+    Robocopy $sourceDirectory $destination $sourceFile /R:1 /W:1 | Out-Null
+    # 1 retry, 1-second wait between retries
+    
+    if ($LASTEXITCODE -gt 1) {
+        throw "Robocopy failed with exit code $LASTEXITCODE"
+    }
+    
     Write-Output "File backed up: $($backup_files.Name) to $destination"
     
     # Verify if the file exists in the destination folder
